@@ -194,7 +194,7 @@ public class NurminenDetectionAlgorithm implements DetectionAlgorithm {
         }
 
         // now look at text rows to help us find more tables and flesh out existing ones
-        List<TextChunk> textChunks = TextElement.mergeWords(page.getText());
+        List<TextChunk> textChunks = TextChunk.mergeWords(page.getText());
         List<Line> lines = Line.groupByLines(textChunks);
 
         // first look for text rows that intersect an existing table - those lines should probably be part of the table

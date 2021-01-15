@@ -10,14 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import technology.tabula.Cell;
-import technology.tabula.Page;
-import technology.tabula.Rectangle;
-import technology.tabula.Ruling;
-import technology.tabula.Table;
-import technology.tabula.TableWithRulingLines;
-import technology.tabula.TextElement;
-import technology.tabula.Utils;
+import technology.tabula.*;
 
 /**
  * @author manuel
@@ -118,7 +111,7 @@ public class SpreadsheetExtractionAlgorithm implements ExtractionAlgorithm {
             for (Cell c: cells) {
                 if (c.intersects(area)) {
 
-                    c.setTextElements(TextElement.mergeWords(page.getText(c)));
+                    c.setTextElements(TextChunk.mergeWords(page.getText(c)));
                     overlappingCells.add(c);
                 }
             }

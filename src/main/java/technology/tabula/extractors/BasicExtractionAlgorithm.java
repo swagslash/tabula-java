@@ -43,7 +43,7 @@ public class BasicExtractionAlgorithm implements ExtractionAlgorithm {
             return Arrays.asList(new Table[] { Table.empty() });
         }
         
-        List<TextChunk> textChunks = this.verticalRulings == null ? TextElement.mergeWords(page.getText()) : TextElement.mergeWords(page.getText(), this.verticalRulings);
+        List<TextChunk> textChunks = this.verticalRulings == null ? TextChunk.mergeWords(page.getText()) : TextChunk.mergeWords(page.getText(), this.verticalRulings);
         List<Line> lines = Line.groupByLines(textChunks);
         List<Float> columns = null;
         

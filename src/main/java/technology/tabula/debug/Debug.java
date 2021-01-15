@@ -65,7 +65,7 @@ public class Debug {
     }
 
     private static void debugColumns(Graphics2D g, Page page) {
-        List<TextChunk> textChunks = TextElement.mergeWords(page.getText());
+        List<TextChunk> textChunks = TextChunk.mergeWords(page.getText());
         List<Line> lines = Line.groupByLines(textChunks);
         List<Float> columns = BasicExtractionAlgorithm.columnPositions(lines);
         int i = 0;
@@ -82,7 +82,7 @@ public class Debug {
     }
 
     private static void debugTextChunks(Graphics2D g, Page page) {
-        List<TextChunk> chunks = TextElement.mergeWords(page.getText(), page.getVerticalRulings());
+        List<TextChunk> chunks = TextChunk.mergeWords(page.getText(), page.getVerticalRulings());
         drawShapes(g, chunks);
     }
 
@@ -135,7 +135,7 @@ public class Debug {
         // ProjectionProfile profile = new ProjectionProfile(page,
         // page.getText(), horizSmoothKernel, vertSmoothKernel);
         ProjectionProfile profile = new ProjectionProfile(page,
-                TextElement.mergeWords(page.getText(), page.getVerticalRulings()), horizSmoothKernel * 1.5f,
+                TextChunk.mergeWords(page.getText(), page.getVerticalRulings()), horizSmoothKernel * 1.5f,
                 vertSmoothKernel);
         float prec = (float) Math.pow(10, ProjectionProfile.DECIMAL_PLACES);
 
