@@ -171,7 +171,8 @@
             <version>2.22.2</version>
             <configuration>
                 <!-- Travis build workaround -->
-                <argLine>-Xms1024m -Xmx2048m</argLine>
+                <forkCount>0</forkCount>
+                <argLine>@{argLine} -Xms1024m -Xmx2048m</argLine>
             </configuration>
         </plugin>
         <!-- download source jars and link them when running eclipse:eclipse -->
@@ -184,6 +185,25 @@
                 <downloadJavadocs>true</downloadJavadocs>
             </configuration>
         </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.7.201606060606</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
     </plugins>
 </build>
 
@@ -235,7 +255,10 @@
                         </execution>
                     </executions>
                 </plugin>
-            </plugins>
+
+
+
+          </plugins>
         </build>
     </profile>
 </profiles>
