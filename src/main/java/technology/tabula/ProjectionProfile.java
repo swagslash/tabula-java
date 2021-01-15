@@ -3,6 +3,7 @@ package technology.tabula;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 // NOTE: this class is currently not used by the extraction algorithms
@@ -71,8 +72,6 @@ public class ProjectionProfile {
     }
     
     public float[] findVerticalSeparators(float minColumnWidth) {
-        boolean foundNarrower = false;
-
         List<Integer> verticalSeparators = new ArrayList<>();
         for (Ruling r: area.getVerticalRulings()) {
             if (r.length() / this.textBounds.getHeight() >= 0.95) {
@@ -81,30 +80,23 @@ public class ProjectionProfile {
         }
         
         List<Integer> seps = findSeparatorsFromProjection(filter(getFirstDeriv(this.horizontalProjection), 0.1f));
-        
-        for (Integer foundSep: seps) {
-            for (Integer explicitSep: verticalSeparators) {
-                if (Math.abs(toDouble(foundSep - explicitSep)) <= minColumnWidth) {
-                    foundNarrower = true;
-                    break;
-                } 
-            }
-            if (!foundNarrower) {
-                verticalSeparators.add(foundSep);
-            }
-            foundNarrower = false;
-        }
-        Collections.sort(verticalSeparators);
-        float[] rv = new float[verticalSeparators.size()];
-        for (int i = 0; i < rv.length; i++) {
-            rv[i] = (float) toDouble(verticalSeparators.get(i));
-        }
-        return rv;
-    }
-    
-    public float[] findHorizontalSeparators(float minRowHeight) {
-        boolean foundShorter = false;
 
+        narrowSeparators(minColumnWidth, verticalSeparators, seps);
+
+        return integerListToFloatArray(verticalSeparators);
+    }
+
+    private static float[] integerListToFloatArray(List<Integer> separators) {
+        float[] floatArray = new float[separators.size()];
+        List<Double> collect = separators.stream().map(ProjectionProfile::toDouble).collect(Collectors.toList());
+        for (int i = 0; i < collect.size(); i++) {
+            floatArray[i] = collect.get(i).floatValue();
+        }
+
+        return floatArray;
+    }
+
+    public float[] findHorizontalSeparators(float minRowHeight) {
         List<Integer> horizontalSeparators = new ArrayList<>();
         for (Ruling r: area.getHorizontalRulings()) {
             System.out.println(r.length() / this.textBounds.getWidth());
@@ -114,27 +106,29 @@ public class ProjectionProfile {
         }
         
         List<Integer> seps = findSeparatorsFromProjection(filter(getFirstDeriv(this.verticalProjection), 0.1f));
-        
-        for (Integer foundSep: seps) {
-            for (Integer explicitSep: horizontalSeparators) {
-                if (Math.abs(toDouble(foundSep - explicitSep)) <= minRowHeight) {
-                    foundShorter = true;
-                    break;
-                } 
-            }
-            if (!foundShorter) {
-                horizontalSeparators.add(foundSep);
-            }
-            foundShorter = false;
-        }
-        Collections.sort(horizontalSeparators);
-        float[] rv = new float[horizontalSeparators.size()];
-        for (int i = 0; i < rv.length; i++) {
-            rv[i] = (float) toDouble(horizontalSeparators.get(i));
-        }
-        return rv;
+
+        narrowSeparators(minRowHeight, horizontalSeparators, seps);
+
+        return integerListToFloatArray(horizontalSeparators);
     }
-    
+
+    private static void narrowSeparators(float minDistance, List<Integer> existingSeparators, List<Integer> foundSeperators) {
+        boolean foundNarrower = false;
+        for (Integer foundSep : foundSeperators) {
+            for (Integer explicitSep : existingSeparators) {
+                if (Math.abs(toDouble(foundSep - explicitSep)) <= minDistance) {
+                    foundNarrower = true;
+                    break;
+                }
+            }
+            if (!foundNarrower) {
+                existingSeparators.add(foundSep);
+            }
+            foundNarrower = false;
+        }
+        Collections.sort(existingSeparators);
+    }
+
     private static List<Integer> findSeparatorsFromProjection(float[] derivative) {
         List<Integer> separators = new ArrayList<>();
         Integer lastNeg = null;
