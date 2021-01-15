@@ -63,7 +63,7 @@ public class BasicExtractionAlgorithm implements ExtractionAlgorithm {
             columns = columnPositions(lines);
         }
         
-        Table table = new Table(this);
+        Table table = new Table(this.getExtractionMethod().toString());
         table.setRect(page.getLeft(), page.getTop(), page.getWidth(), page.getHeight());
 
         for (int i = 0; i < lines.size(); i++) {
@@ -99,8 +99,8 @@ public class BasicExtractionAlgorithm implements ExtractionAlgorithm {
     }
     
     @Override
-    public String toString() {
-        return "stream";
+    public ExtractionMethod getExtractionMethod() {
+        return ExtractionMethod.Stream;
     }
     
     
