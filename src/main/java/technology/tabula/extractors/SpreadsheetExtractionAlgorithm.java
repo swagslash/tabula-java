@@ -338,7 +338,7 @@ public class SpreadsheetExtractionAlgorithm implements ExtractionAlgorithm {
         
         return rectangles;
     }
-    
+
     private enum Direction {
         HORIZONTAL,
         VERTICAL
