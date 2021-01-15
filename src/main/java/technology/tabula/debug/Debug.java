@@ -16,18 +16,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.cli.*;
-import technology.tabula.Cell;
-import technology.tabula.CommandLineApp;
-import technology.tabula.Line;
-import technology.tabula.ObjectExtractor;
-import technology.tabula.Page;
-import technology.tabula.ProjectionProfile;
-import technology.tabula.Rectangle;
-import technology.tabula.Ruling;
-import technology.tabula.Table;
-import technology.tabula.TextChunk;
-import technology.tabula.TextElement;
-import technology.tabula.Utils;
+import technology.tabula.*;
 import technology.tabula.detectors.NurminenDetectionAlgorithm;
 import technology.tabula.extractors.BasicExtractionAlgorithm;
 import technology.tabula.extractors.SpreadsheetExtractionAlgorithm;
@@ -65,8 +54,8 @@ public class Debug {
     }
 
     private static void debugColumns(Graphics2D g, Page page) {
-        List<TextChunk> textChunks = TextElement.mergeWords(page.getText());
-        List<Line> lines = TextChunk.groupByLines(textChunks);
+        List<TextChunk> textChunks = TextChunk.mergeWords(page.getText());
+        List<Line> lines = Line.groupByLines(textChunks);
         List<Float> columns = BasicExtractionAlgorithm.columnPositions(lines);
         int i = 0;
         for (float p : columns) {
@@ -82,7 +71,7 @@ public class Debug {
     }
 
     private static void debugTextChunks(Graphics2D g, Page page) {
-        List<TextChunk> chunks = TextElement.mergeWords(page.getText(), page.getVerticalRulings());
+        List<TextChunk> chunks = TextChunk.mergeWords(page.getText(), page.getVerticalRulings());
         drawShapes(g, chunks);
     }
 
@@ -135,7 +124,7 @@ public class Debug {
         // ProjectionProfile profile = new ProjectionProfile(page,
         // page.getText(), horizSmoothKernel, vertSmoothKernel);
         ProjectionProfile profile = new ProjectionProfile(page,
-                TextElement.mergeWords(page.getText(), page.getVerticalRulings()), horizSmoothKernel * 1.5f,
+                TextChunk.mergeWords(page.getText(), page.getVerticalRulings()), horizSmoothKernel * 1.5f,
                 vertSmoothKernel);
         float prec = (float) Math.pow(10, ProjectionProfile.DECIMAL_PLACES);
 
@@ -218,8 +207,9 @@ public class Debug {
         PDDocument document = PDDocument.load(new File(pdfPath));
 
         ObjectExtractor oe = new ObjectExtractor(document);
+        PageIterator pageIterator = new PageIterator(oe, pageNumber + 1);
 
-        Page page = oe.extract(pageNumber + 1);
+        Page page = pageIterator.next();
 
         if (area != null) {
             page = page.getArea(area);

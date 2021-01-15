@@ -57,7 +57,7 @@ public class TestTextElement {
 		elements.add(new TextElement(40f, 15f, 10f, 20f, PDType1Font.HELVETICA, 1f, "C", 1f, 6f));
 		elements.add(new TextElement(60f, 15f, 10f, 20f, PDType1Font.HELVETICA, 1f, "D", 1f, 6f));
 		
-		List<TextChunk> words = TextElement.mergeWords(elements);
+		List<TextChunk> words = TextChunk.mergeWords(elements);
 		
 		List<TextChunk> expectedWords = new ArrayList<>();
 		expectedWords.add(new TextChunk(new TextElement(0f, 15f, 10f, 20f, PDType1Font.HELVETICA, 1f, "A", 1f, 6f)));
@@ -78,7 +78,7 @@ public class TestTextElement {
 		elements.add(new TextElement(0f, 35f, 10f, 20f, PDType1Font.HELVETICA, 1f, "C", 1f, 6f));
 		elements.add(new TextElement(0f, 45f, 10f, 20f, PDType1Font.HELVETICA, 1f, "D", 1f, 6f));
 		
-		List<TextChunk> words = TextElement.mergeWords(elements);
+		List<TextChunk> words = TextChunk.mergeWords(elements);
 		
 		List<TextChunk> expectedWords = new ArrayList<>();
 		TextChunk textChunk = new TextChunk(new TextElement(0f, 15f, 10f, 20f, PDType1Font.HELVETICA, 1f, "A", 1f, 6f));
@@ -104,8 +104,8 @@ public class TestTextElement {
 		elements.add(new TextElement(0f, 35f, 10f, 20f, PDType1Font.HELVETICA, 1f, "C", 1f, 6f));
 		elements.add(new TextElement(0f, 45f, 10f, 20f, PDType1Font.HELVETICA, 1f, "D", 1f, 6f));
 		
-		List<TextChunk> words = TextElement.mergeWords(elements);
-		List<TextChunk> words2 = TextElement.mergeWords(elements);
+		List<TextChunk> words = TextChunk.mergeWords(elements);
+		List<TextChunk> words2 = TextChunk.mergeWords(elements);
 		Assert.assertEquals(words, words2);
 	}
 
@@ -120,7 +120,7 @@ public class TestTextElement {
 		elements.add(new TextElement(0f, 35f, 10f, 20f, PDType1Font.HELVETICA, 1f, "C", 1f, 6f));
 		elements.add(new TextElement(0f, 45f, 10f, 20f, PDType1Font.TIMES_ROMAN, 10f, "D", 1f, 6f));
 		
-		List<TextChunk> words = TextElement.mergeWords(elements);
+		List<TextChunk> words = TextChunk.mergeWords(elements);
 		
 		List<TextChunk> expectedWords = new ArrayList<>();
 		TextChunk textChunk = new TextChunk(new TextElement(0f, 15f, 10f, 20f, PDType1Font.HELVETICA, 1f, "A", 1f, 6f));
@@ -147,7 +147,7 @@ public class TestTextElement {
 		elements.add(new TextElement(0f, 90f, 10f, 20f, PDType1Font.HELVETICA, 1f, "D", 1f, 6f));
 		elements.add(new TextElement(0f, 100f, 10f, 20f, PDType1Font.HELVETICA, 1f, "O", 1f, 6f));
 		
-		List<TextChunk> words = TextElement.mergeWords(elements);
+		List<TextChunk> words = TextChunk.mergeWords(elements);
 		
 		List<TextChunk> expectedWords = new ArrayList<>();
 		TextChunk textChunk = new TextChunk(new TextElement(0f, 0f, 10f, 20f, PDType1Font.HELVETICA, 1f, "H", 1f, 6f));
@@ -182,7 +182,7 @@ public class TestTextElement {
 		elements.add(new TextElement(20f, 30f, 10f, 20f, PDType1Font.HELVETICA, 1f, "D", 1f, 6f));
 		elements.add(new TextElement(20f, 40f, 10f, 20f, PDType1Font.HELVETICA, 1f, "O", 1f, 6f));
 		
-		List<TextChunk> words = TextElement.mergeWords(elements);
+		List<TextChunk> words = TextChunk.mergeWords(elements);
 		
 		List<TextChunk> expectedWords = new ArrayList<>();
 		TextChunk textChunk = new TextChunk(new TextElement(0f, 0f, 10f, 20f, PDType1Font.HELVETICA, 1f, "H", 1f, 6f));
