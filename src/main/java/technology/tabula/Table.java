@@ -4,19 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import technology.tabula.extractors.ExtractionAlgorithm;
-
 @SuppressWarnings("serial")
 public class Table extends Rectangle {
 
 	public static final Table empty() { return new Table(""); }
 
-	private Table(String extractionMethod) {
+	public Table(String extractionMethod) {
 		this.extractionMethod = extractionMethod;
-	}
-
-	public Table(ExtractionAlgorithm extractionAlgorithm) {
-		this(extractionAlgorithm.toString());
 	}
 
 	private final String extractionMethod;

@@ -83,7 +83,12 @@ public class SpreadsheetExtractionAlgorithm implements ExtractionAlgorithm {
     public List<Table> extract(Page page) {
         return extract(page, page.getRulings());
     }
-    
+
+    @Override
+    public ExtractionMethod getExtractionMethod() {
+        return ExtractionMethod.Lattice;
+    }
+
     /**
      * Extract a list of Table from page using rulings as separators
      */
@@ -131,7 +136,7 @@ public class SpreadsheetExtractionAlgorithm implements ExtractionAlgorithm {
                 }
             }
                         
-            TableWithRulingLines t = new TableWithRulingLines(area, overlappingCells, horizontalOverlappingRulings, verticalOverlappingRulings, this);
+            TableWithRulingLines t = new TableWithRulingLines(area, overlappingCells, horizontalOverlappingRulings, verticalOverlappingRulings, getExtractionMethod().toString());
             spreadsheets.add(t);
         }
         Utils.sort(spreadsheets, Rectangle.ILL_DEFINED_ORDER);
@@ -332,11 +337,6 @@ public class SpreadsheetExtractionAlgorithm implements ExtractionAlgorithm {
         }
         
         return rectangles;
-    }
-    
-    @Override
-    public String toString() {
-        return "lattice";
     }
     
     private enum Direction {
