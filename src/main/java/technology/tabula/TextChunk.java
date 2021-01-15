@@ -325,43 +325,6 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
         return hasHadAtLeastOneNonEmptyTextChunk;
     }
 
-    public static List<Line> groupByLines(List<TextChunk> textChunks) {
-        List<Line> lines = new ArrayList<>();
 
-        if (textChunks.size() == 0) {
-            return lines;
-        }
-
-        float bbwidth = Rectangle.boundingBoxOf(textChunks).width;
-
-        Line l = new Line();
-        l.addTextChunk(textChunks.get(0));
-        textChunks.remove(0);
-        lines.add(l);
-
-        Line last = lines.get(lines.size() - 1);
-        for (TextChunk te : textChunks) {
-            if (last.verticalOverlapRatio(te) < 0.1) {
-                if (last.width / bbwidth > 0.9 && TextChunk.allSameChar(last.getTextElements())) {
-                    lines.remove(lines.size() - 1);
-                }
-                lines.add(new Line());
-                last = lines.get(lines.size() - 1);
-            }
-            last.addTextChunk(te);
-        }
-
-        if (last.width / bbwidth > 0.9 && TextChunk.allSameChar(last.getTextElements())) {
-            lines.remove(lines.size() - 1);
-        }
-
-        List<Line> rv = new ArrayList<>(lines.size());
-
-        for (Line line : lines) {
-            rv.add(Line.removeRepeatedCharacters(line, ' ', 3));
-        }
-
-        return rv;
-    }
 
 }

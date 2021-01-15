@@ -66,7 +66,7 @@ public class Debug {
 
     private static void debugColumns(Graphics2D g, Page page) {
         List<TextChunk> textChunks = TextElement.mergeWords(page.getText());
-        List<Line> lines = TextChunk.groupByLines(textChunks);
+        List<Line> lines = Line.groupByLines(textChunks);
         List<Float> columns = BasicExtractionAlgorithm.columnPositions(lines);
         int i = 0;
         for (float p : columns) {

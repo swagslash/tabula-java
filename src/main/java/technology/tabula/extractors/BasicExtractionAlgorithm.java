@@ -44,7 +44,7 @@ public class BasicExtractionAlgorithm implements ExtractionAlgorithm {
         }
         
         List<TextChunk> textChunks = this.verticalRulings == null ? TextElement.mergeWords(page.getText()) : TextElement.mergeWords(page.getText(), this.verticalRulings);
-        List<Line> lines = TextChunk.groupByLines(textChunks);
+        List<Line> lines = Line.groupByLines(textChunks);
         List<Float> columns = null;
         
         if (this.verticalRulings != null) {
