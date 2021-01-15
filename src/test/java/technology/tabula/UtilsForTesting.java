@@ -26,7 +26,8 @@ public class UtilsForTesting {
             PDDocument document = PDDocument
                     .load(new File(path));
             oe = new ObjectExtractor(document);
-            Page page = oe.extract(pageNumber);
+            PageIterator iterator = new PageIterator(oe, pageNumber);
+            Page page = iterator.next();
             return page;
         } finally {
             if (oe != null)

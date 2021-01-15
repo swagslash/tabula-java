@@ -209,7 +209,7 @@ public class TestTableDetection {
         // the algorithm we're going to be testing
         NurminenDetectionAlgorithm detectionAlgorithm = new NurminenDetectionAlgorithm();
 
-        PageIterator pages = extractor.extract();
+        PageIterator pages = new PageIterator(extractor, extractor.getPages());
         while (pages.hasNext()) {
             Page page = pages.next();
             List<Rectangle> tablesOnPage = detectionAlgorithm.detect(page);

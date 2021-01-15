@@ -23,14 +23,14 @@ public class TestObjectExtractor {
     public void testEmptyOnEncryptedFileRaisesException() throws IOException {
         PDDocument pdf_document = PDDocument.load(new File("src/test/resources/technology/tabula/encrypted.pdf"));
         ObjectExtractor oe = new ObjectExtractor(pdf_document);
-        oe.extract().next();
+        new PageIterator(oe, oe.getPages()).next();
     }
 
     @Test
     public void testCanReadPDFWithOwnerEncryption() throws IOException {
         PDDocument pdf_document = PDDocument.load(new File("src/test/resources/technology/tabula/S2MNCEbirdisland.pdf"));
         ObjectExtractor oe = new ObjectExtractor(pdf_document);
-        PageIterator pi = oe.extract();
+        PageIterator pi = new PageIterator(oe, oe.getPages());
         int i = 0;
         while (pi.hasNext()) {
             i++;
@@ -45,7 +45,7 @@ public class TestObjectExtractor {
         PDDocument pdf_document = PDDocument.load(new File("src/test/resources/technology/tabula/encrypted.pdf"), "userpassword");
         ObjectExtractor oe = new ObjectExtractor(pdf_document);
         List<Page> pages = new ArrayList<>();
-        PageIterator pi = oe.extract();
+        PageIterator pi = new PageIterator(oe, oe.getPages());
         while (pi.hasNext()) {
             pages.add(pi.next());
         }
@@ -57,7 +57,7 @@ public class TestObjectExtractor {
     public void testTextExtractionDoesNotRaise() throws IOException {
         PDDocument pdf_document = PDDocument.load(new File("src/test/resources/technology/tabula/rotated_page.pdf"));
         ObjectExtractor oe = new ObjectExtractor(pdf_document);
-        PageIterator pi = oe.extract();
+        PageIterator pi = new PageIterator(oe, oe.getPages());
 
         assertTrue(pi.hasNext());
         assertNotNull(pi.next());
@@ -69,7 +69,7 @@ public class TestObjectExtractor {
     public void testShouldDetectRulings() throws IOException {
         PDDocument pdf_document = PDDocument.load(new File("src/test/resources/technology/tabula/should_detect_rulings.pdf"));
         ObjectExtractor oe = new ObjectExtractor(pdf_document);
-        PageIterator pi = oe.extract();
+        PageIterator pi = new PageIterator(oe, oe.getPages());
 
         Page page = pi.next();
         List<Ruling> rulings = page.getRulings();
@@ -83,7 +83,7 @@ public class TestObjectExtractor {
     public void testDontThrowNPEInShfill() throws IOException {
         PDDocument pdf_document = PDDocument.load(new File("src/test/resources/technology/tabula/labor.pdf"));
         ObjectExtractor oe = new ObjectExtractor(pdf_document);
-        PageIterator pi = oe.extract();
+        PageIterator pi = new PageIterator(oe, oe.getPages());
         assertTrue(pi.hasNext());
         try {
             Page p = pi.next();
@@ -99,7 +99,9 @@ public class TestObjectExtractor {
         assertEquals(2, pdf_document.getNumberOfPages());
 
         ObjectExtractor oe = new ObjectExtractor(pdf_document);
-        Page page = oe.extract(2);
+        PageIterator iterator = new PageIterator(oe, 2);
+
+        Page page = iterator.next();
 
         assertNotNull(page);
 
@@ -111,7 +113,8 @@ public class TestObjectExtractor {
         assertEquals(2, pdf_document.getNumberOfPages());
 
         ObjectExtractor oe = new ObjectExtractor(pdf_document);
-        oe.extract(3);
+        PageIterator iterator = new PageIterator(oe, 3);
+        iterator.next();
 
     }
 

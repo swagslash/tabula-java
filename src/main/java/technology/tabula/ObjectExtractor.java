@@ -52,22 +52,12 @@ public class ObjectExtractor {
                 .build();
     }
 
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
-    public PageIterator extract(Iterable<Integer> pages) {
-        return new PageIterator(this, pages);
+    public Iterable<Integer> getPages () {
+       return Utils.range(1, this.pdfDocument.getNumberOfPages() + 1);
     }
 
-    public PageIterator extract() {
-        return extract(Utils.range(1, pdfDocument.getNumberOfPages() + 1));
-    }
-
-    public Page extract(int pageNumber) {
-        return extract(Utils.range(pageNumber, pageNumber + 1)).next();
-    }
-
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
     public void close() throws IOException {
         pdfDocument.close();
     }
-    
+
 }

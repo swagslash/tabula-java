@@ -16,18 +16,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.cli.*;
-import technology.tabula.Cell;
-import technology.tabula.CommandLineApp;
-import technology.tabula.Line;
-import technology.tabula.ObjectExtractor;
-import technology.tabula.Page;
-import technology.tabula.ProjectionProfile;
-import technology.tabula.Rectangle;
-import technology.tabula.Ruling;
-import technology.tabula.Table;
-import technology.tabula.TextChunk;
-import technology.tabula.TextElement;
-import technology.tabula.Utils;
+import technology.tabula.*;
 import technology.tabula.detectors.NurminenDetectionAlgorithm;
 import technology.tabula.extractors.BasicExtractionAlgorithm;
 import technology.tabula.extractors.SpreadsheetExtractionAlgorithm;
@@ -218,8 +207,9 @@ public class Debug {
         PDDocument document = PDDocument.load(new File(pdfPath));
 
         ObjectExtractor oe = new ObjectExtractor(document);
+        PageIterator pageIterator = new PageIterator(oe, pageNumber + 1);
 
-        Page page = oe.extract(pageNumber + 1);
+        Page page = pageIterator.next();
 
         if (area != null) {
             page = page.getArea(area);

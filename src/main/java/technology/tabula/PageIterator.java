@@ -14,6 +14,12 @@ public class PageIterator implements Iterator<Page> {
         this.pageIndexIterator = pages.iterator();
     }
 
+    public PageIterator(ObjectExtractor objectExtractor, int pageNumber) {
+        super();
+        this.objectExtractor = objectExtractor;
+        this.pageIndexIterator = Utils.range(pageNumber, pageNumber + 1).iterator();
+    }
+
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
     @Override
     public boolean hasNext() {
