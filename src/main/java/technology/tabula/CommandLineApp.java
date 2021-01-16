@@ -6,6 +6,7 @@ import java.io.FilenameFilter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -19,13 +20,12 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 import technology.tabula.detectors.DetectionAlgorithm;
 import technology.tabula.detectors.NurminenDetectionAlgorithm;
-import technology.tabula.extractors.BasicExtractionAlgorithm;
+import technology.tabula.extractors.BasicExtractionAlgorithm;;
 import technology.tabula.extractors.SpreadsheetExtractionAlgorithm;
 import technology.tabula.writers.CSVWriter;
 import technology.tabula.writers.JSONWriter;
 import technology.tabula.writers.TSVWriter;
 import technology.tabula.writers.Writer;
-
 
 public class CommandLineApp {
 
@@ -107,11 +107,7 @@ public class CommandLineApp {
     }
 
     public void extractDirectoryTables(CommandLine line, File pdfDirectory) throws ParseException {
-        File[] pdfs = pdfDirectory.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".pdf");
-            }
-        });
+        File[] pdfs = pdfDirectory.listFiles((dir, name) -> name.endsWith(".pdf"));
 
         for (File pdfFile : pdfs) {
             File outputFile = new File(getOutputFilename(pdfFile));
@@ -237,7 +233,7 @@ public class CommandLineApp {
             if (f.size() != 4) {
                 throw new ParseException("area parameters must be top,left,bottom,right optionally preceded by %");
             }
-            areaList.add(new Pair<Integer, Rectangle>(areaCalculationMode, new Rectangle(f.get(0), f.get(1), f.get(3) - f.get(1), f.get(2) - f.get(0))));
+            areaList.add(new Pair<>(areaCalculationMode, new Rectangle(f.get(0), f.get(1), f.get(3) - f.get(1), f.get(2) - f.get(0))));
         }
         return areaList;
     }
@@ -310,7 +306,7 @@ public class CommandLineApp {
         o.addOption("t", "stream", false, "Force PDF to be extracted using stream-mode extraction (if there are no ruling lines separating each cell)");
         o.addOption("i", "silent", false, "Suppress all stderr output.");
         o.addOption("u", "use-line-returns", false, "Use embedded line returns in cells. (Only in spreadsheet mode.)");
-        // o.addOption("d", "debug", false, "Print detected table areas instead of processing.");
+
         o.addOption(Option.builder("b")
                 .longOpt("batch")
                 .desc("Convert all .pdfs in the provided directory.")
@@ -372,9 +368,6 @@ public class CommandLineApp {
         private List<Float> verticalRulingPositions = null;
 
         private ExtractionMethod method = ExtractionMethod.BASIC;
-
-        public TableExtractor() {
-        }
 
         public void setVerticalRulingPositions(List<Float> positions) {
             this.verticalRulingPositions = positions;
@@ -491,12 +484,9 @@ public class CommandLineApp {
         JSON;
 
         static String[] formatNames() {
-            OutputFormat[] values = OutputFormat.values();
-            String[] rv = new String[values.length];
-            for (int i = 0; i < values.length; i++) {
-                rv[i] = values[i].name();
-            }
-            return rv;
+            return Arrays.stream(values())
+                    .map(Enum::name)
+                    .toArray(String[]::new);
         }
     }
 

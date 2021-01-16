@@ -19,6 +19,9 @@ import org.apache.pdfbox.rendering.PDFRenderer;
  * @author manuel
  */
 public class Utils {
+    private final static float EPSILON = 0.01f;
+    protected static boolean useQuickSort = useCustomQuickSort();
+
     public static boolean within(double first, double second, double variance) {
         return second < first + variance && second > first - variance;
     }
@@ -30,9 +33,6 @@ public class Utils {
     public static boolean overlap(double y1, double height1, double y2, double height2) {
         return overlap(y1, height1, y2, height2, 0.1f);
     }
-
-    private final static float EPSILON = 0.01f;
-    protected static boolean useQuickSort = useCustomQuickSort();
 
     public static boolean feq(double f1, double f2) {
         return (Math.abs(f1 - f2) < EPSILON);
@@ -76,7 +76,6 @@ public class Utils {
         };
     }
 
-
     /* from apache.commons-lang */
     public static boolean isNumeric(final CharSequence cs) {
         if (cs == null || cs.length() == 0) {
@@ -117,19 +116,19 @@ public class Utils {
         return ret;
     }
 
-	/**
-	 * Wrap Collections.sort so we can fallback to a non-stable quicksort if we're
-	 * running on JDK7+
-	 */
-	public static <T extends Comparable<? super T>> void sort(List<T> list) {
-		if (useQuickSort) QuickSort.sort(list);
-		else              Collections.sort(list);
-	}
+    /**
+     * Wrap Collections.sort so we can fallback to a non-stable quicksort if we're
+     * running on JDK7+
+     */
+    public static <T extends Comparable<? super T>> void sort(List<T> list) {
+        if (useQuickSort) QuickSort.sort(list);
+        else Collections.sort(list);
+    }
 
-	public static <T> void sort(List<T> list, Comparator<? super T> comparator) {
-		if (useQuickSort) QuickSort.sort(list, comparator);
-		else              Collections.sort(list, comparator);
-	}
+    public static <T> void sort(List<T> list, Comparator<? super T> comparator) {
+        if (useQuickSort) QuickSort.sort(list, comparator);
+        else list.sort(comparator);
+    }
 
     private static boolean useCustomQuickSort() {
         // taken from PDFBOX:
@@ -165,8 +164,8 @@ public class Utils {
         List<Integer> rv = new ArrayList<>();
 
         String[] ranges = pagesSpec.split(",");
-        for (int i = 0; i < ranges.length; i++) {
-            String[] r = ranges[i].split("-");
+        for (String range : ranges) {
+            String[] r = range.split("-");
             if (r.length == 0 || !Utils.isNumeric(r[0]) || r.length > 1 && !Utils.isNumeric(r[1])) {
                 throw new ParseException("Syntax error in page range specification");
             }
@@ -201,22 +200,17 @@ public class Utils {
         }
 
         // snap by X
-        Collections.sort(points, new Comparator<Point2D>() {
-            @Override
-            public int compare(Point2D arg0, Point2D arg1) {
-                return java.lang.Double.compare(arg0.getX(), arg1.getX());
-            }
-        });
+        points.sort(Comparator.comparingDouble(Point2D::getX));
 
         List<List<Point2D>> groupedPoints = new ArrayList<>();
-        groupedPoints.add(new ArrayList<>(Arrays.asList(new Point2D[]{points.get(0)})));
+        groupedPoints.add(new ArrayList<>(Collections.singletonList(points.get(0))));
 
         for (Point2D p : points.subList(1, points.size() - 1)) {
             List<Point2D> last = groupedPoints.get(groupedPoints.size() - 1);
             if (Math.abs(p.getX() - last.get(0).getX()) < xThreshold) {
                 groupedPoints.get(groupedPoints.size() - 1).add(p);
             } else {
-                groupedPoints.add(new ArrayList<>(Arrays.asList(new Point2D[]{p})));
+                groupedPoints.add(new ArrayList<>(Collections.singletonList(p)));
             }
         }
 
@@ -230,25 +224,19 @@ public class Utils {
                 p.setLocation(avgLoc, p.getY());
             }
         }
-        // ---
 
         // snap by Y
-        Collections.sort(points, new Comparator<Point2D>() {
-            @Override
-            public int compare(Point2D arg0, Point2D arg1) {
-                return java.lang.Double.compare(arg0.getY(), arg1.getY());
-            }
-        });
+        points.sort(Comparator.comparingDouble(Point2D::getY));
 
         groupedPoints = new ArrayList<>();
-        groupedPoints.add(new ArrayList<>(Arrays.asList(new Point2D[]{points.get(0)})));
+        groupedPoints.add(new ArrayList<>(Collections.singletonList(points.get(0))));
 
         for (Point2D p : points.subList(1, points.size() - 1)) {
             List<Point2D> last = groupedPoints.get(groupedPoints.size() - 1);
             if (Math.abs(p.getY() - last.get(0).getY()) < yThreshold) {
                 groupedPoints.get(groupedPoints.size() - 1).add(p);
             } else {
-                groupedPoints.add(new ArrayList<>(Arrays.asList(new Point2D[]{p})));
+                groupedPoints.add(new ArrayList<>(Collections.singletonList(p)));
             }
         }
 
@@ -262,7 +250,6 @@ public class Utils {
                 p.setLocation(p.getX(), avgLoc);
             }
         }
-        // ---
 
         // finally, modify lines
         for (Map.Entry<Line2D.Float, Point2D[]> ltp : linesToPoints.entrySet()) {
@@ -271,18 +258,17 @@ public class Utils {
         }
     }
 
-	public static BufferedImage pageConvertToImage(PDPage page, int dpi, ImageType imageType) throws IOException {
-		try (PDDocument document = new PDDocument()) {
-			document.addPage(page);
-			PDFRenderer renderer = new PDFRenderer(document);
-			document.close();
-			return renderer.renderImageWithDPI(0, dpi, imageType);
-		}
-	}
+    public static BufferedImage pageConvertToImage(PDPage page, int dpi, ImageType imageType) throws IOException {
+        try (PDDocument document = new PDDocument()) {
+            document.addPage(page);
+            PDFRenderer renderer = new PDFRenderer(document);
+            return renderer.renderImageWithDPI(0, dpi, imageType);
+        }
+    }
 
-  public static BufferedImage pageConvertToImage(PDDocument doc, PDPage page, int dpi, ImageType imageType) throws IOException {
-    PDFRenderer renderer = new PDFRenderer(doc);
-    return renderer.renderImageWithDPI(doc.getPages().indexOf(page), dpi, imageType);
-  }
+    public static BufferedImage pageConvertToImage(PDDocument doc, PDPage page, int dpi, ImageType imageType) throws IOException {
+        PDFRenderer renderer = new PDFRenderer(doc);
+        return renderer.renderImageWithDPI(doc.getPages().indexOf(page), dpi, imageType);
+    }
 
 }
