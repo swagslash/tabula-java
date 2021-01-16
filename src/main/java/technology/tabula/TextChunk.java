@@ -34,7 +34,7 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
 
     // I hate Java so bad.
     // we're making this HashMap static! which requires really funky initialization per http://stackoverflow.com/questions/6802483/how-to-directly-initialize-a-hashmap-in-a-literal-way/6802502#6802502
-    private static HashMap<Byte, DirectionalityOptions> directionalities;
+    private static final HashMap<Byte, DirectionalityOptions> directionalities;
 
     static {
         directionalities = new HashMap<>();
@@ -69,21 +69,19 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
      * We attach whitespace to the beginning of non-RTL
      **/
     public TextChunk groupByDirectionality(Boolean isLtrDominant) {
-        if (this.getTextElements().size() <= 0) {
+        if (this.getTextElements().isEmpty()) {
             throw new IllegalArgumentException();
         }
 
         ArrayList<ArrayList<TextElement>> chunks = new ArrayList<>();
         ArrayList<TextElement> buff = new ArrayList<>();
-        DirectionalityOptions buffDirectionality = DirectionalityOptions.NONE; // the directionality of the characters in buff;
+        DirectionalityOptions buffDirectionality = DirectionalityOptions.NONE; // the directionality of the characters in buff
 
         for (TextElement te : this.getTextElements()) {
             //TODO: we need to loop over the textelement characters
             //      because it is possible for a textelement to contain multiple characters?
 
-
-            // System.out.println(te.getText() + " is " + Character.getDirectionality(te.getText().charAt(0) ) + " " + directionalities.get(Character.getDirectionality(te.getText().charAt(0) )));
-            if (buff.size() == 0) {
+            if (buff.isEmpty()) {
                 buff.add(te);
                 buffDirectionality = directionalities.get(Character.getDirectionality(te.getText().charAt(0)));
             } else {
@@ -148,7 +146,6 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
         return java.lang.Integer.compare(ltrCnt, rtlCnt); // 1 is LTR, 0 is neutral, -1 is RTL
     }
 
-
     public TextChunk merge(TextChunk other) {
         super.merge(other);
         return this;
@@ -167,7 +164,7 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
 
     @Override
     public String getText() {
-        if (this.textElements.size() == 0) {
+        if (this.textElements.isEmpty()) {
             return "";
         }
 
@@ -209,11 +206,10 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
             throw new IllegalArgumentException();
         }
 
-        TextChunk[] rv = new TextChunk[]{
+        return new TextChunk[] {
                 new TextChunk(this.getTextElements().subList(0, i)),
                 new TextChunk(this.getTextElements().subList(i, this.getTextElements().size()))
         };
-        return rv;
     }
 
     /**
@@ -223,8 +219,10 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
      * such that: ["1234", "56xx"]
      */
     public List<TextChunk> squeeze(Character c, int minRunLength) {
-        Character currentChar, lastChar = null;
-        int subSequenceLength = 0, subSequenceStart = 0;
+        Character currentChar;
+        Character lastChar = null;
+        int subSequenceLength = 0;
+        int subSequenceStart = 0;
         TextChunk[] t;
         List<TextChunk> rv = new ArrayList<>();
 
@@ -259,7 +257,6 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
             lastChar = currentChar;
         }
 
-
         if (rv.isEmpty()) { // no splits occurred, hence this.squeeze() == [this]
             if (subSequenceLength >= minRunLength && subSequenceLength < this.textElements.size()) {
                 TextChunk[] chunks = this.splitAt(subSequenceStart);
@@ -270,9 +267,7 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
         }
 
         return rv;
-
     }
-
 
     @Override
     public int hashCode() {
@@ -293,11 +288,8 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
             return false;
         TextChunk other = (TextChunk) obj;
         if (textElements == null) {
-            if (other.textElements != null)
-                return false;
-        } else if (!textElements.equals(other.textElements))
-            return false;
-        return true;
+            return other.textElements == null;
+        } else return textElements.equals(other.textElements);
     }
 
     public static boolean allSameChar(List<TextChunk> textChunks) {
@@ -312,7 +304,7 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
         boolean hasHadAtLeastOneNonEmptyTextChunk = false;
         char first = '\u0000';
         for (TextChunk tc : textChunks) {
-            if (tc.getText().length() == 0) {
+            if (tc.getText().isEmpty()) {
                 continue;
             }
             if (first == '\u0000') {
@@ -326,7 +318,7 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
     }
 
     public static List<TextChunk> mergeWords(List<TextElement> textElements) {
-        return mergeWords(textElements, new ArrayList<Ruling>());
+        return mergeWords(textElements, new ArrayList<>());
     }
 
     /**
@@ -397,7 +389,6 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
             // Estimate the expected width of the space based on the
             // space character with some margin.
             wordSpacing = chr.getWidthOfSpace();
-            deltaSpace = 0;
             if (java.lang.Float.isNaN(wordSpacing) || wordSpacing == 0) {
                 deltaSpace = java.lang.Float.MAX_VALUE;
             } else if (lastWordSpacing < 0) {
@@ -429,7 +420,6 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
             // new line?
             sameLine = true;
             if (!Utils.overlap(chr.getBottom(), chr.height, maxYForLine, maxHeightForLine)) {
-                endOfLastTextX = -1;
                 expectedStartOfNextWordX = -java.lang.Float.MAX_VALUE;
                 maxYForLine = -java.lang.Float.MAX_VALUE;
                 maxHeightForLine = -1;
@@ -493,5 +483,4 @@ public class TextChunk extends RectangularTextContainer<TextElement> {
     private static boolean verticallyOverlapsRuling(TextElement te, Ruling r) {
         return Math.max(0, Math.min(te.getBottom(), r.getY2()) - Math.max(te.getTop(), r.getY1())) > 0;
     }
-
 }

@@ -13,7 +13,7 @@ import technology.tabula.Table;
 
 public class CSVWriter implements Writer {
 
-	private final CSVFormat format;
+    private final CSVFormat format;
 
     public CSVWriter() {
         this(CSVFormat.EXCEL);
@@ -23,7 +23,6 @@ public class CSVWriter implements Writer {
         this.format = format;
     }
 
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
     @Override
     public void write(Appendable out, Table table) throws IOException {
         write(out, Collections.singletonList(table));
